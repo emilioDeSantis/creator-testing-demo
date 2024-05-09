@@ -1,16 +1,21 @@
-import React from 'react';
+import React from "react";
 
-const PublishButton: React.FC = () => {
+interface PublishButtonProps {
+    onClick: () => void;
+}
+
+const PublishButton: React.FC<PublishButtonProps> = ({ onClick }) => {
     return (
         <div
+            onClick={onClick}
             style={{
-                borderRadius: '1000px',
-                paddingBlock: '0.8rem',
-                paddingInline: '1.8rem',
-                background: '#A259FF',
-                color: 'white',
+                borderRadius: "1000px",
+                paddingBlock: "0.8rem",
+                paddingInline: "1.8rem",
+                background: "#A259FF",
+                color: "white",
                 fontWeight: 500,
-                cursor: 'pointer',
+                cursor: "pointer",
             }}
         >
             Publish Survey
