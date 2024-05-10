@@ -5,9 +5,15 @@ interface PublishButtonProps {
 }
 
 const PublishButton: React.FC<PublishButtonProps> = ({ onClick }) => {
+    const [publishing, setPublishing] = React.useState(false);
+
+    const handleClick = () => {
+        setPublishing(true);
+        onClick();
+    }
     return (
         <div
-            onClick={onClick}
+            onClick={handleClick}
             style={{
                 borderRadius: "1000px",
                 paddingBlock: "0.8rem",
@@ -16,9 +22,10 @@ const PublishButton: React.FC<PublishButtonProps> = ({ onClick }) => {
                 color: "white",
                 fontWeight: 500,
                 cursor: "pointer",
+                opacity: publishing ? 0.5 : 1,
             }}
         >
-            Publish Survey
+            {publishing ? "Publishing..." : "Publish Survey"}
         </div>
     );
 };

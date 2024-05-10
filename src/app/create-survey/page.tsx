@@ -24,7 +24,7 @@ const CreateSurvey: React.FC = () => {
         name: "",
     });
 
-    const [surveyName, setSurveyName] = React.useState("");
+    const [surveyName, setSurveyName] = React.useState("Untitled");
     const router = useRouter();
 
     useEffect(() => {
@@ -105,19 +105,6 @@ const CreateSurvey: React.FC = () => {
                 >
                     <PublishButton onClick={publish} />
                 </div>
-                <div
-                    style={{
-                        position: "absolute",
-                        left: "1.2rem",
-                    }}
-                >
-                    <input
-                        type="text"
-                        placeholder="Name your survey"
-                        value={surveyName}
-                        onChange={handleInputChange}
-                    />
-                </div>
             </div>
             <div
                 style={{
@@ -152,11 +139,38 @@ const CreateSurvey: React.FC = () => {
                         borderRadius: "4px",
                         border: "1px solid #ddd",
                         paddingInline: "8rem",
-                        paddingTop: "6rem",
+                        paddingTop: "2rem",
                         overflowY: "auto",
                         paddingBottom: "24rem",
                     }}
                 >
+
+                <div
+                    style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginBottom: "4rem",
+                        paddingInline: "2rem",
+                    }}
+                >
+                    <input
+                    style={{
+                        paddingBlock: "0.2rem",
+                        paddingInline: "0.6rem",
+                        borderBottom: "1px solid #ddd",
+                        fontSize: "1.2rem",
+                        marginBottom: "1rem",
+                        textAlign: "center",
+                        width: "100%",  
+                    }}
+                        type="text"
+                        placeholder="Name your survey"
+                        value={surveyName}
+                        onChange={handleInputChange}
+                    />
+                </div>
                     {survey.questions.map((question, index) => (
                         <QuestionEditor
                             key={index}

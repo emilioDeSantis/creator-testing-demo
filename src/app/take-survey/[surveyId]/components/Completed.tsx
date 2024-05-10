@@ -9,7 +9,7 @@ const Completed: React.FC = () => {
         
         }}>
             <h1>Thank you for completing this survey.</h1>
-            <Link
+            <div
                 style={{
                     display: "flex",
                     justifyContent: "center",
@@ -23,10 +23,12 @@ const Completed: React.FC = () => {
                     background: "transparent",
                     fontSize: "1.2rem",
                 }}
-                href="/"
+                onClick={() => {
+                    window.close()
+                }}
             >
                 Continue
-            </Link>
+            </div>
         </div>
     );
 };

@@ -127,8 +127,10 @@ const HomePage: React.FC = () => {
                                     fontWeight: 500,
                                     cursor: "pointer",
                                 }}
+                                target="_blank"
                                 href={"/take-survey/" + survey.id}
                             >
+
                                 Take Survey
                             </Link>
                         </div>

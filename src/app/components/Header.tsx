@@ -1,8 +1,12 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const Header: React.FC = () => {
+    const pathname = usePathname();
+
     return (
         <div
             style={{
@@ -20,7 +24,7 @@ const Header: React.FC = () => {
             }}
         >
             <Link
-            href={"/"}
+                href={"/"}
                 style={{
                     width: "12rem",
                     height: "3rem",
@@ -38,25 +42,54 @@ const Header: React.FC = () => {
                     }}
                 />
             </Link>
-            <div
-                style={{
-                    display: "flex",
-                    gap: "1rem",
-                }}
-            >
-            <Link style={{
-                color: "#333",
-                textDecoration: "none",
-                paddingBlock: "0.6rem",
-                paddingInline: "1.6rem",
-            }} href="/create-survey">Create new survey</Link>
-            <Link style={{
-                color: "#333",
-                textDecoration: "none",
-                paddingBlock: "0.6rem",
-                paddingInline: "1.6rem",
-            }} href="/">Surveys</Link>
-            </div>
+            {pathname != "/take-survey" && (
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "1rem",
+                    }}
+                >
+                    <Link
+                        style={{
+                            textDecoration: "none",
+                            borderRadius: "1000px",
+                            paddingBlock: "0.8rem",
+                            paddingInline: "1.8rem",
+                            background:
+                                pathname == "/create-survey"
+                                    ? "#E0888722"
+                                    : "white",
+                            color:
+                                pathname == "/create-survey"
+                                    ? "#E08887"
+                                    : "black",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                        }}
+                        href="/create-survey"
+                    >
+                        Create new survey
+                    </Link>
+                    <Link
+                        style={{
+                            textDecoration: "none",
+                            borderRadius: "1000px",
+                            paddingBlock: "0.8rem",
+                            paddingInline: "1.8rem",
+                            background:
+                                pathname == "/"
+                                    ? "#E0888722"
+                                    : "white",
+                            color: pathname == "/" ? "#E08887" : "black",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                        }}
+                        href="/"
+                    >
+                        Surveys
+                    </Link>
+                </div>
+            )}
         </div>
     );
 };
