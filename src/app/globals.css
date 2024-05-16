@@ -103,3 +103,13 @@ input::placeholder {
   color: black;
   opacity: 1; /* Ensures full opacity for the placeholder text */
 }
+
+.border {
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+}
+
+.pannel-padding {
+  padding-block: 1rem;
+  padding-inline: 1rem;
+} 

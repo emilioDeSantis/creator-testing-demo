@@ -1,24 +1,18 @@
 import React, { useState } from "react";
+import { Question, QuestionType, Survey } from "@/app/types";
 
 interface NewQuestionProps {
-    setSurvey: React.Dispatch<React.SetStateAction<any>>;
-    survey: any;
+    addQuestion: (question: Omit<Question, "id">) => void;
+    survey: Survey;
 }
 
-const NewQuestion: React.FC<NewQuestionProps> = ({ setSurvey, survey }) => {
+const NewQuestion: React.FC<NewQuestionProps> = ({ addQuestion, survey }) => {
     const [inputText, setInputText] = useState("");
 
     const onTextChange = (text: string) => {
-        setSurvey((prev: any) => ({
-            ...prev,
-            questions: [
-                ...prev.questions,
-                {
-                    question: text,
-                    options: ["", "", "", ""],
-                },
-            ],
-        }));
+        addQuestion({
+            question: text,
+        });
         setInputText("");
     };
 
@@ -50,7 +44,7 @@ const NewQuestion: React.FC<NewQuestionProps> = ({ setSurvey, survey }) => {
             style={{
                 display: "flex",
                 opacity: inputText === "" ? 0.5 : 1,
-                width: '100%',
+                width: "100%",
             }}
         >
             {survey.questions.length + 1}.&nbsp;
