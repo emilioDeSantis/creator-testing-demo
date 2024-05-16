@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Question, QuestionType, Survey } from "@/app/types";
 
 interface NewQuestionProps {
-    addQuestion: (question: Omit<Question, "id">) => void;
+    addQuestion: (question: Omit<Question, "id" | "type" | "options" | "parameters">) => void;
     survey: Survey;
 }
 

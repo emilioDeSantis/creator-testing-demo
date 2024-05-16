@@ -6,7 +6,7 @@ import QuestionsListItem from "./QuestionsListItem";
 
 interface QuestionsListProps {
     questions: Question[];
-    addQuestion: (question: Omit<Question, "id">) => void;
+    addQuestion: (question: Omit<Question, "id"| "type" | "options" | "parameters">) => void;
     removeQuestion: (id: string) => void;
     focusedQuestionId: string | null;
     setFocusedQuestionId: (id: string) => void;
