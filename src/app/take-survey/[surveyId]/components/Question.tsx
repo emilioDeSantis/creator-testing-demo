@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 import { Option, QuestionType, Results, Survey } from "@/app/types";
-import MultipleChoiceInput from "./MultipleChoiceInput";
+// import MultipleChoiceInput from "./MultipleChoiceInput";
 
 interface QuestionProps {
     survey: Survey;
@@ -45,13 +45,13 @@ const Question: React.FC<QuestionProps> = ({
             <h3 style={{ fontSize: "1.6rem", fontWeight: 500 }}>
                 {questionIndex + 1 + ". " + survey.questions[questionIndex].question}
             </h3>
-            {survey.questions[questionIndex].type === QuestionType.MultipleChoice && (
+            {/* {survey.questions[questionIndex].type === QuestionType.MultipleChoice && (
                 <MultipleChoiceInput
                     options={survey.questions[questionIndex].options}
                     currentOptionId={results.answers.find((answer) => answer.questionId === survey.questions[questionIndex].id)?.value || ""}
                     handleOptionChange={handleOptionChange}
                 />
-            )}
+            )} */}
         </div>
     );
 };
