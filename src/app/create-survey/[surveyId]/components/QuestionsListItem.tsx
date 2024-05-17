@@ -40,7 +40,7 @@ const QuestionsListItem: React.FC<QuestionsListItemProps> = ({
                     fontWeight: 500,
                     display: "flex",
                     gap: "1rem",
-                    width: "18rem",
+                    width: "14rem",
                     paddingBlock: "0.8rem",
                     position: "relative",
                 }}
