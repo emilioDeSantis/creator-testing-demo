@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { doc, setDoc } from "firebase/firestore";
 import firestore from "../../../firebaseConfig"; // Adjust the path to your firebaseConfig file
 import { v4 as uuidv4 } from "uuid";
-import HeavyHitterButton from "../take-survey/[surveyId]/components/HeavyHitterButton";
+import HeavyHitterButton from "../components/HeavyHitterButton";
 import { createSurvey } from "../firebaseUtils";
 const CreateNewSurvey: React.FC = () => {
     const [surveyName, setSurveyName] = useState("");

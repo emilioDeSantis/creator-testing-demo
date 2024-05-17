@@ -99,10 +99,10 @@ input {
     width: 100%;
 }
 
-input::placeholder {
-  color: black;
-  opacity: 1; /* Ensures full opacity for the placeholder text */
-}
+/* input::placeholder {
+    color: black;
+    opacity: 1; 
+} */
 
 .border {
     border: 1px solid #dddddd;
@@ -110,6 +110,117 @@ input::placeholder {
 }
 
 .pannel-padding {
-  padding-block: 1rem;
-  padding-inline: 1rem;
-} 
+    padding-block: 1rem;
+    padding-inline: 1rem;
+}
+
+.question-list-item:hover {
+    background: #eee;
+}
+
+.question-list-item-selected {
+    background: #eee;
+}
+
+.remove-question-button {
+    opacity: 0.6;
+}
+
+.remove-question-button:hover {
+    opacity: 1;
+}
+
+.add-option-button {
+    opacity: 0.6;
+}
+
+.add-option-button:hover {
+    opacity: 0.8;
+}
+
+select {
+    border: 1px solid #d0d5dd;
+    outline: none;
+}
+select:hover {
+    border: 1px solid #a1a7b0;
+    outline: none;
+}
+
+select:focus {
+    border: 1px solid #d6bbfb;
+    outline: none;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: calc(4px + 2rem);
+    height: calc(4px + 1rem);
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #d1d6dd;
+    transition: 0.3s;
+    border-radius: 1000px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1rem;
+    width: 1rem;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #7f56d9;
+}
+
+input:checked + .slider:before {
+    transform: translateX(1rem);
+}
+
+.parameter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-weight: 300;
+    color: #667085;
+}
+
+.parameter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.parameter-input {
+    width: 100%;
+    padding-inline: 0.6rem;
+    padding-block: 0.5rem;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    outline: none;
+    color: #667085;
+}

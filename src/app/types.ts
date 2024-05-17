@@ -37,3 +37,12 @@ export interface Survey {
     name: string;
     questions: Question[];
 }
+
+export interface answer {
+    questionId: string;
+    value: string | string[] | number;
+}
+
+export interface Results {
+    answers: answer[];
+}

@@ -1,6 +1,7 @@
 // components/OpenTextSettings.tsx
-import React from 'react';
-import { Parameters } from '@/app/types';
+import React from "react";
+import { Parameters } from "@/app/types";
+import ToggleSwitch from "./ToggleSwitch";
 
 interface OpenTextSettingsProps {
     parameters: Parameters;
@@ -17,44 +18,68 @@ const OpenTextSettings: React.FC<OpenTextSettingsProps> = ({
         toggleParameter(parameter);
     };
 
-    const handleParameterChange = (parameter: keyof Parameters, event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleParameterChange = (
+        parameter: keyof Parameters,
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
         updateParameterValue(parameter, parseInt(event.target.value, 10));
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <label>
-                <input
-                    type="checkbox"
+        <div
+        className="parameter-container"
+        >
+            <label className="parameter">
+                Minimum Characters
+                <ToggleSwitch
                     checked={parameters.mininmumCharacters}
                     onChange={() => handleToggleParameter("mininmumCharacters")}
                 />
-                Minimum Characters
-                {parameters.mininmumCharacters && (
-                    <input
-                        type="number"
-                        value={parameters.minimumCharactersValue}
-                        onChange={(event) => handleParameterChange("minimumCharactersValue", event)}
-                        style={{ marginLeft: "1rem" }}
-                    />
-                )}
             </label>
-            <label>
+            {parameters.mininmumCharacters && (
                 <input
-                    type="checkbox"
+                    type="number"
+                    value={parameters.minimumCharactersValue}
+                    onChange={(event) =>
+                        handleParameterChange("minimumCharactersValue", event)
+                    }
+                    min={0}
+                    style={{ 
+                        width: "100%",
+                        paddingBlock: "0.5rem",
+                        paddingInline: "0.5rem",
+                        borderRadius: "8px", 
+                        border: "1px solid #ccc",
+                        color: "#667085",
+                        marginBottom: "0.5rem",
+                     }}
+                />
+            )}
+            <label className="parameter">
+                Maximum Characters
+                <ToggleSwitch
                     checked={parameters.maximumCharacters}
                     onChange={() => handleToggleParameter("maximumCharacters")}
                 />
-                Maximum Characters
-                {parameters.maximumCharacters && (
-                    <input
-                        type="number"
-                        value={parameters.maximumCharactersValue}
-                        onChange={(event) => handleParameterChange("maximumCharactersValue", event)}
-                        style={{ marginLeft: "1rem" }}
-                    />
-                )}
             </label>
+            {parameters.maximumCharacters && (
+                <input
+                    type="number"
+                    min={0}
+                    value={parameters.maximumCharactersValue}
+                    onChange={(event) =>
+                        handleParameterChange("maximumCharactersValue", event)
+                    }
+                    style={{ 
+                        width: "100%",
+                        paddingBlock: "0.5rem",
+                        paddingInline: "0.5rem",
+                        borderRadius: "8px", 
+                        border: "1px solid #ccc",
+                        color: "#667085",
+                     }}
+                />
+            )}
         </div>
     );
 };

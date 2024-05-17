@@ -1,100 +1,60 @@
+// components/Question.tsx
 "use client";
 import React from "react";
+import { Option, QuestionType, Results, Survey } from "@/app/types";
+import MultipleChoiceInput from "./MultipleChoiceInput";
 
 interface QuestionProps {
-    survey: any;
+    survey: Survey;
     questionIndex: number;
-    setAnswers: React.Dispatch<React.SetStateAction<any>>;
-    answers: any;
+    setResults: React.Dispatch<React.SetStateAction<Results>>;
+    results: Results;
 }
 
 const Question: React.FC<QuestionProps> = ({
     survey,
     questionIndex,
-    setAnswers,
-    answers,
+    setResults,
+    results,
 }) => {
-    // Retrieve the current answer for this question, or set it to null if not yet answered
-    const currentAnswer =
-        answers.find(
-            (answer: any) =>
-                answer.question === survey.questions[questionIndex].question
-        )?.answer || "";
 
     const handleOptionChange = (selectedOption: string) => {
-        // Check if the question already has an answer in the state
-        const existingAnswerIndex = answers.findIndex(
-            (answer: any) =>
-                answer.question === survey.questions[questionIndex].question
+        const existingAnswerIndex = results.answers.findIndex(
+            (answer) => answer.questionId === survey.questions[questionIndex].id
         );
+
         if (existingAnswerIndex !== -1) {
-            // Update existing answer
-            const updatedAnswers = [...answers];
-            updatedAnswers[existingAnswerIndex].answer = selectedOption;
-            setAnswers(updatedAnswers);
+            const updatedAnswers = [...results.answers];
+            updatedAnswers[existingAnswerIndex].value = selectedOption;
+            setResults({ answers: updatedAnswers });
         } else {
-            // Add new answer to the state
-            setAnswers([
-                ...answers,
-                {
-                    question: survey.questions[questionIndex].question,
-                    answer: selectedOption,
-                },
-            ]);
+            setResults({
+                answers: [
+                    ...results.answers,
+                    {
+                        questionId: survey.questions[questionIndex].id,
+                        value: selectedOption,
+                    },
+                ],
+            });
         }
     };
 
     return (
-        <div
-            style={{
-                width: "50rem",
-                marginTop: "2rem",
-            }}
-        >
-            <h3
-                style={{
-                    fontSize: "1.6rem",
-                    fontWeight: 500,
-                }}
-            >
-                {questionIndex +
-                    1 +
-                    ". " +
-                    survey.questions[questionIndex].question}
+        <div style={{ width: "50rem", marginTop: "2rem" }}>
+            <h3 style={{ fontSize: "1.6rem", fontWeight: 500 }}>
+                {questionIndex + 1 + ". " + survey.questions[questionIndex].question}
             </h3>
-            <div style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                marginTop: "1rem",
-                gap: "0.5rem",
-                paddingInline: "2rem",
-            }}>
-                {survey.questions[questionIndex].options.map(
-                    (option: string, optionIndex: number) => (
-                        <div style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                        }} key={optionIndex}>
-                            <input
-                            style={{
-                            
-                            }}
-                                type="radio"
-                                name={`question-${questionIndex}`}
-                                value={option}
-                                checked={currentAnswer === option}
-                                onChange={() => handleOptionChange(option)}
-                            />
-                            <label>{option}</label>
-                        </div>
-                    )
-                )}
-            </div>
+            {survey.questions[questionIndex].type === QuestionType.MultipleChoice && (
+                <MultipleChoiceInput
+                    options={survey.questions[questionIndex].options}
+                    currentOptionId={results.answers.find((answer) => answer.questionId === survey.questions[questionIndex].id)?.value || ""}
+                    handleOptionChange={handleOptionChange}
+                />
+            )}
         </div>
     );
 };
 
 export default Question;
+

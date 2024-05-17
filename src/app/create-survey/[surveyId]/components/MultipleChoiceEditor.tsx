@@ -70,6 +70,8 @@ const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
                 flexDirection: "column",
                 gap: "1rem",
                 marginTop: "1.2rem",
+                width: "100%",
+                alignItems: "flex-start",
             }}
         >
             {question.options.map((option, optionIndex) => (
@@ -83,7 +85,7 @@ const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
                             width: "1rem",
                             borderRadius: "100%",
                             border: "1px solid black",
-                            opacity: option.label === "" ? 0.4 : 1,
+                            opacity: option.label === "" ? 0.6 : 1,
                         }}
                     />
                     <input
@@ -92,7 +94,8 @@ const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
                         }}
                         style={{
                             marginLeft: "0.6rem",
-                            opacity: option.label === "" ? 0.4 : 1,
+                            opacity: option.label === "" ? 0.6 : 1,
+                            fontSize: "0.9rem",
                         }}
                         type="text"
                         placeholder="Type option label"
@@ -121,6 +124,7 @@ const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
                         style={{
                             marginLeft: "0.6rem",
                             opacity: 0.8,
+                            fontSize: "0.9rem",
                         }}
                     >
                         Other
@@ -128,19 +132,21 @@ const MultipleChoiceEditor: React.FC<MultipleChoiceEditorProps> = ({
                 </div>
             )}
             <button
+            className="add-option-button"
                 style={{
-                    padding: "0.6rem 1rem",
-                    color: "#7047EB",
-                    border: "1px solid #7047EB",
-                    borderRadius: "4px",
                     cursor: "pointer",
                     background: "transparent",
-                    fontSize: "1.2rem",
-                    marginTop: "1.2rem",
+                    textDecoration: "underline",
+                    border: "none",
+                    display: "flex",
+                    paddingBlock: "0.6rem",
+                    paddingInline: "1rem",
+                    fontSize: "0.9rem",
+
                 }}
                 onClick={() => addOptionToQuestion(question.id, { label: "" })}
             >
-                Add Option
+                + Additional option
             </button>
         </div>
     );

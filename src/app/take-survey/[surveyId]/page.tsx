@@ -1,71 +1,44 @@
+// pages/surveys/[surveyId].tsx
 "use client";
-import { doc, getDoc, collection, addDoc } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
-import firestore from "../../../../firebaseConfig";
-import Question from "./components/Question";
-import Completed from "./components/Completed";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { fetchSurvey, submitResults } from "@/app/firebaseUtils";
+import { Results, Survey } from "@/app/types";
+import Question from "@/app/take-survey/[surveyId]/components/Question";
+import Completed from "@/app/take-survey/[surveyId]/components/Completed";
 
 const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
-    const [survey, setSurvey] = useState<any>({});
+    const [survey, setSurvey] = useState<Survey>({ name: "", questions: [] });
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<any>([]);
+    const [results, setResults] = useState<Results>({ answers: [] });
     const [completed, setCompleted] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-        console.log(answers);
-    }, [answers]);
-
-    useEffect(() => {
-        // Fetch survey data
-        const fetchData = async () => {
-            try {
-                // Fetch survey data from Firestore
-                const docRef = doc(firestore, "surveys", params.surveyId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    setSurvey(docSnap.data());
-                } else {
-                    console.log("No such document!");
-                }
-            } catch (error) {
-                console.error("Error fetching document:", error);
+        const loadSurvey = async () => {
+            const fetchedSurvey = await fetchSurvey(params.surveyId);
+            if (fetchedSurvey) {
+                setSurvey(fetchedSurvey);
             }
         };
-        fetchData();
+        loadSurvey();
     }, [params.surveyId]);
 
-    // Increment to the next question or handle completion
     const handleNextQuestion = async () => {
         if (currentQuestionIndex < survey.questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
-            await submitAnswers();
+            await submitResults(params.surveyId, results);
             setCompleted(true);
         }
     };
 
-    // Function to submit answers to Firestore
-    const submitAnswers = async () => {
-        try {
-            // Create a reference to the "results" subcollection
-            const resultsRef = collection(doc(firestore, "surveys", params.surveyId), "results");
-            // Add the answers to the subcollection
-            await addDoc(resultsRef, {
-                answers: answers
-            });
-            console.log("Answers successfully submitted");
-        } catch (error) {
-            console.error("Error submitting answers:", error);
-        }
-    };
-
-    // Show a loading message while fetching survey data
-    if (!survey.questions) {
+    if (!survey.questions.length) {
         return <div>Loading...</div>;
     }
 
     return (
-<main
+        <main
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -102,21 +75,33 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                     {survey.name}
                 </h1>
             </div>
-            {!completed &&<form>
-                <Question survey={survey} questionIndex={currentQuestionIndex} setAnswers={setAnswers} answers={answers} />
-                <button style={{
-                    padding: "1rem 1.6rem",
-                    color: "#7047EB",
-                    border: "1px solid #7047EB",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    background: "transparent",
-                    fontSize: "1.2rem",
-                    marginTop: "3rem",
-                
-                }} type="button" onClick={handleNextQuestion}>Continue</button>
-            </form>}
-            {completed &&<Completed/>}
+            {!completed && (
+                <form>
+                    <Question
+                        survey={survey}
+                        questionIndex={currentQuestionIndex}
+                        setResults={setResults}
+                        results={results}
+                    />
+                    <button
+                        style={{
+                            padding: "1rem 1.6rem",
+                            color: "#7047EB",
+                            border: "1px solid #7047EB",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            background: "transparent",
+                            fontSize: "1.2rem",
+                            marginTop: "3rem",
+                        }}
+                        type="button"
+                        onClick={handleNextQuestion}
+                    >
+                        Continue
+                    </button>
+                </form>
+            )}
+            {completed && <Completed />}
         </main>
     );
 };

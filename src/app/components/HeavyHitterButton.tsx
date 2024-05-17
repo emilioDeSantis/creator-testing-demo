@@ -16,11 +16,12 @@ const HeavyHitterButton: React.FC<HeavyHitterButtonProps> = ({ text, onClick, is
             onClick={handleClick}
             style={{
                 borderRadius: "1000px",
-                paddingBlock: "0.8rem",
-                paddingInline: "1.8rem",
+                paddingBlock: "0.6rem",
+                paddingInline: "1.2rem",
+                fontSize: "0.9rem",
                 background: "#A259FF",
                 color: "white",
-                fontWeight: 500,
+                fontWeight: 400,
                 cursor: "pointer",
                 opacity: isProcessing ? 0.5 : 1,
             }}

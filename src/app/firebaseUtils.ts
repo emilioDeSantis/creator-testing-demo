@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import { Survey, Question, Option, Parameters, QuestionType } from "./types"; // Adjust the path to your types file
+import { Survey, Question, Option, Parameters, QuestionType, Results } from "./types"; // Adjust the path to your types file
 import firestore from "../../firebaseConfig";
 
 export const fetchSurvey = async (surveyId: string): Promise<Survey | null> => {
@@ -44,10 +44,10 @@ export const updateSurvey = async (surveyId: string, survey :Survey, ): Promise<
     }
 };
 
-export const submitAnswers = async (surveyId: string, answers: any[]): Promise<boolean> => {
+export const submitResults = async (surveyId: string, results: Results): Promise<boolean> => {
     try {
         const resultsRef = collection(doc(firestore, "surveys", surveyId), "results");
-        await addDoc(resultsRef, { answers });
+        await addDoc(resultsRef, { results });
         return true;
     } catch (error) {
         console.error("Error submitting answers:", error);

@@ -1,6 +1,7 @@
 // components/RankingSettings.tsx
 import React from "react";
 import { Parameters } from "@/app/types";
+import ToggleSwitch from "./ToggleSwitch";
 
 interface RankingSettingsProps {
     parameters: Parameters;
@@ -9,21 +10,20 @@ interface RankingSettingsProps {
 
 const RankingSettings: React.FC<RankingSettingsProps> = ({
     parameters,
-    toggleParameter
+    toggleParameter,
 }) => {
     const handleToggleParameter = (parameter: keyof Parameters) => {
         toggleParameter(parameter);
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <label>
-                <input
-                    type="checkbox"
+        <div className="parameter-container">
+            <label className="parameter">
+                Randomize Options
+                <ToggleSwitch
                     checked={parameters.randomize}
                     onChange={() => handleToggleParameter("randomize")}
                 />
-                Randomize Options
             </label>
         </div>
     );

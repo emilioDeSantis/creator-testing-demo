@@ -1,6 +1,7 @@
 // components/MultipleChoiceSettings.tsx
 import React from "react";
 import { Parameters } from "@/app/types";
+import ToggleSwitch from "./ToggleSwitch";
 
 interface MultipleChoiceSettingsProps {
     parameters: Parameters;
@@ -9,37 +10,39 @@ interface MultipleChoiceSettingsProps {
 
 const MultipleChoiceSettings: React.FC<MultipleChoiceSettingsProps> = ({
     parameters,
-    toggleParameter
+    toggleParameter,
 }) => {
     const handleToggleParameter = (parameter: keyof Parameters) => {
         toggleParameter(parameter);
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <label>
-                <input
-                    type="checkbox"
+        <div className="parameter-container"
+        >
+            {/* <label className="parameter">
+                Multiple Selections
+                <ToggleSwitch
                     checked={parameters.multipleSelections}
                     onChange={() => handleToggleParameter("multipleSelections")}
                 />
-                Multiple Selections
+                
             </label>
-            <label>
-                <input
-                    type="checkbox"
+            {parameters.multipleSelections && (
+
+            )} */}
+            <label className="parameter">
+                Randomize Options
+                <ToggleSwitch
                     checked={parameters.randomize}
                     onChange={() => handleToggleParameter("randomize")}
                 />
-                Randomize Options
             </label>
-            <label>
-                <input
-                    type="checkbox"
+            <label className="parameter">
+                {`"Other" Option`}
+                <ToggleSwitch
                     checked={parameters.otherOption}
                     onChange={() => handleToggleParameter("otherOption")}
                 />
-                Other Option
             </label>
         </div>
     );

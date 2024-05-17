@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import QuestionsList from "./components/QuestionsList";
 import QuestionPannel from "./components/QuestionPannel";
 import { Option, Parameters, Question, QuestionType, Survey } from "../../types";
-import HeavyHitterButton from "../../take-survey/[surveyId]/components/HeavyHitterButton";
+import HeavyHitterButton from "../../components/HeavyHitterButton";
 import { fetchSurvey, updateSurvey } from "@/app/firebaseUtils";
 
 const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
@@ -47,8 +47,8 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                 otherOption: false,
                 mininmumCharacters: false,
                 maximumCharacters: false,
-                minimumCharactersValue: 0,
-                maximumCharactersValue: 0,
+                minimumCharactersValue: 50,
+                maximumCharactersValue: 200,
                 minimumRatingValue: "",
                 middleRatingValue: "",
                 maximumRatingValue: "",
@@ -165,10 +165,7 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                 "Error updating document. Check the console for more information."
             );
         }
-    };
-    
-
-    return (
+    };return (
         <main
             style={{
                 display: "flex",
@@ -176,9 +173,10 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                 alignItems: "center",
                 justifyContent: "flex-start",
                 width: "100%",
-                height: "100vh",
-                paddingBottom: "2rem",
-                marginTop: "4rem",
+                height: "100vh", // Ensure the main container takes the full height
+                overflow: "hidden", // Hide overflow to prevent scrolling on the main container
+                paddingBottom: "1rem",
+                paddingTop: "4rem",
             }}
         >
             <div
@@ -211,7 +209,7 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                         right: "1.2rem",
                     }}
                 >
-                    <HeavyHitterButton onClick={publish} text="Publish"/>
+                    <HeavyHitterButton onClick={publish} text="Publish" />
                 </div>
             </div>
             <div
@@ -223,6 +221,7 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                     flexGrow: 1,
                     paddingInline: "1.2rem",
                     gap: "1.6rem",
+                    overflow: "hidden", // Prevent overflow on the main flex container
                 }}
             >
                 <QuestionsList
@@ -239,13 +238,13 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                         flexDirection: "column",
                         alignItems: "flex-start",
                         justifyContent: "flex-start",
-                        maxHeight: "100%",
                         borderRadius: "4px",
                         border: "1px solid #ddd",
-                        paddingInline: "8rem",
-                        paddingTop: "2rem",
+                        paddingTop: "1rem",
                         overflowY: "auto",
-                        paddingBottom: "24rem",
+                        paddingBottom: "2rem", // Adjust padding to ensure it's not too large
+                        height: "100%", // Make sure it takes the available height
+                        paddingInline: "6rem",
                     }}
                 >
                     <div
@@ -255,18 +254,17 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                             justifyContent: "center",
                             alignItems: "center",
                             marginBottom: "4rem",
-                            paddingInline: "2rem",
                         }}
                     >
                         <input
                             style={{
-                                paddingBlock: "0.2rem",
-                                paddingInline: "0.6rem",
+                                paddingBlock: "0.6rem",
                                 borderBottom: "1px solid #ddd",
                                 fontSize: "1.2rem",
                                 marginBottom: "1rem",
                                 textAlign: "center",
                                 width: "100%",
+
                             }}
                             type="text"
                             placeholder="Name your survey"
@@ -274,6 +272,12 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                             onChange={(e) => setSurveyTitle(e.target.value)}
                         />
                     </div>
+                    <div style={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                    }}>
                     {survey.questions.map((question, index) => (
                         <QuestionEditor
                             key={index}
@@ -284,13 +288,15 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                             updateOptionInQuestion={updateOptionInQuestion}
                             removeOptionFromQuestion={removeOptionFromQuestion}
                             setFocusedQuestionId={setFocusedQuestionId}
+                            focused={focusedQuestionId === question.id}
                         />
                     ))}
 
                     <NewQuestion addQuestion={addQuestion} survey={survey} />
+                    </div>
                 </div>
-                <QuestionPannel 
-                    survey={survey} 
+                <QuestionPannel
+                    survey={survey}
                     focusedQuestionId={focusedQuestionId}
                     updateQuestionType={updateQuestionType}
                     toggleParameter={toggleParameter}
@@ -299,6 +305,7 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
             </div>
         </main>
     );
+
 };
 
 export default CreateSurvey;

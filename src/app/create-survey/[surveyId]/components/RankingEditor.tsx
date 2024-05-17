@@ -83,7 +83,7 @@ const RankingEditor: React.FC<RankingEditorProps> = ({
                             width: "1rem",
                             borderRadius: "100%",
                             border: "1px solid black",
-                            opacity: option.label === "" ? 0.4 : 1,
+                            opacity: option.label === "" ? 0.6 : 1,
                         }}
                     />
                     <input
@@ -92,7 +92,8 @@ const RankingEditor: React.FC<RankingEditorProps> = ({
                         }}
                         style={{
                             marginLeft: "0.6rem",
-                            opacity: option.label === "" ? 0.4 : 1,
+                            opacity: option.label === "" ? 0.6 : 1,
+                            fontSize: "0.9rem",
                         }}
                         type="text"
                         placeholder="Type option label"
@@ -107,19 +108,20 @@ const RankingEditor: React.FC<RankingEditorProps> = ({
                 </div>
             ))}
             <button
+            className="add-option-button"
                 style={{
-                    padding: "0.6rem 1rem",
-                    color: "#7047EB",
-                    border: "1px solid #7047EB",
-                    borderRadius: "4px",
                     cursor: "pointer",
                     background: "transparent",
-                    fontSize: "1.2rem",
-                    marginTop: "1.2rem",
+                    textDecoration: "underline",
+                    border: "none",
+                    display: "flex",
+                    paddingBlock: "0.6rem",
+                    paddingInline: "1rem",
+                    fontSize: "0.9rem",
                 }}
                 onClick={() => addOptionToQuestion(question.id, { label: "" })}
             >
-                Add Option
+                + Additional option
             </button>
         </div>
     );

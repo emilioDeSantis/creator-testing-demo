@@ -20,6 +20,7 @@ interface QuestionEditorProps {
     ) => void;
     removeOptionFromQuestion: (questionId: string, optionId: string) => void;
     setFocusedQuestionId: (id: string) => void;
+    focused: boolean;
 }
 
 const QuestionEditor: React.FC<QuestionEditorProps> = ({
@@ -30,6 +31,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
     updateOptionInQuestion,
     removeOptionFromQuestion,
     setFocusedQuestionId,
+    focused,
 }) => {
     const handleQuestionChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -56,9 +58,8 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
                 flexDirection: "column",
                 width: "100%",
                 marginBottom: "2rem",
-                border: "1px solid #ccc",
-                padding: "1rem",
                 cursor: "pointer",
+                opacity: focused ? 1 : 0.5,
             }}
         >
             <div className="question" style={{ display: "flex" }}>

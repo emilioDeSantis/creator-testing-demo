@@ -1,12 +1,14 @@
 // components/QuestionsList.tsx
 import React, { useState } from "react";
-import HeavyHitterButton from "@/app/take-survey/[surveyId]/components/HeavyHitterButton";
 import { Question, QuestionType } from "@/app/types";
 import QuestionsListItem from "./QuestionsListItem";
+import HeavyHitterButton from "@/app/components/HeavyHitterButton";
 
 interface QuestionsListProps {
     questions: Question[];
-    addQuestion: (question: Omit<Question, "id"| "type" | "options" | "parameters">) => void;
+    addQuestion: (
+        question: Omit<Question, "id" | "type" | "options" | "parameters">
+    ) => void;
     removeQuestion: (id: string) => void;
     focusedQuestionId: string | null;
     setFocusedQuestionId: (id: string) => void;
@@ -19,7 +21,6 @@ const QuestionsList: React.FC<QuestionsListProps> = ({
     focusedQuestionId,
     setFocusedQuestionId,
 }) => {
-
     const handleFocus = (id: string) => {
         setFocusedQuestionId(id);
     };
@@ -28,7 +29,7 @@ const QuestionsList: React.FC<QuestionsListProps> = ({
         <div
             className="border"
             style={{
-                width: "26rem",
+                width: "18rem",
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
@@ -44,9 +45,16 @@ const QuestionsList: React.FC<QuestionsListProps> = ({
                     paddingInline: "1rem",
                 }}
             >
-                <h2>Questions</h2>
+                <h2
+                    style={{
+                        fontSize: "1.2rem",
+                        fontWeight: 700,
+                    }}
+                >
+                    Questions
+                </h2>
                 <HeavyHitterButton
-                    text="Add Question +"
+                    text="Add question +"
                     onClick={() => {
                         addQuestion({
                             question: "",
@@ -54,16 +62,25 @@ const QuestionsList: React.FC<QuestionsListProps> = ({
                     }}
                 />
             </div>
-            {questions.map((question, index) => (
-                <QuestionsListItem
-                    key={question.id}
-                    question={question}
-                    index={index}
-                    removeQuestion={removeQuestion}
-                    focusedQuestionId={focusedQuestionId}
-                    setFocusedQuestionId={setFocusedQuestionId}
-                />
-            ))}
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                gap: "0.5rem",
+                paddingBlock: "1rem",
+                overflowY: "auto",
+            }}>
+                {questions.map((question, index) => (
+                    <QuestionsListItem
+                        key={question.id}
+                        question={question}
+                        index={index}
+                        removeQuestion={removeQuestion}
+                        focusedQuestionId={focusedQuestionId}
+                        setFocusedQuestionId={setFocusedQuestionId}
+                    />
+                ))}
+            </div>
         </div>
     );
 };
