@@ -1,26 +1,22 @@
 import React from "react";
-import { Question, Option, QuestionType } from "@/app/types";
+import { Question, Option, QuestionType, Survey } from "@/app/types";
 import MultipleChoiceEditor from "./MultipleChoiceEditor";
 import OpenTextEditor from "./OpenTextEditor";
 import OpinionScaleEditor from "./OpinionScaleEditor";
 import RankingEditor from "./RankingEditor";
+import ProgressiveGridEditor from "./ProgressiveGridEditor";
 
 interface QuestionEditorProps {
     question: Question;
     index: number;
     updateQuestion: (id: string, updatedQuestion: Partial<Question>) => void;
-    addOptionToQuestion: (
-        questionId: string,
-        option: Omit<Option, "id">
-    ) => void;
-    updateOptionInQuestion: (
-        questionId: string,
-        optionId: string,
-        label: string
-    ) => void;
+    addOptionToQuestion: (questionId: string, option: Omit<Option, "id">) => void;
+    updateOptionInQuestion: (questionId: string, optionId: string, label: string) => void;
     removeOptionFromQuestion: (questionId: string, optionId: string) => void;
     setFocusedQuestionId: (id: string) => void;
     focused: boolean;
+    allQuestions: Question[];
+    survey: Survey;
 }
 
 const QuestionEditor: React.FC<QuestionEditorProps> = ({
@@ -32,18 +28,15 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
     removeOptionFromQuestion,
     setFocusedQuestionId,
     focused,
+    allQuestions,
+    survey,
 }) => {
-    const handleQuestionChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        updateQuestion(question.id, { question: event.target.value });
+    const handleQuestionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        updateQuestion(question.id, { questionText: event.target.value });
     };
 
     const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-        // Always set focus on the question editor
         setFocusedQuestionId(question.id);
-
-        // Prevent the default action and propagation for button clicks
         const target = event.target as HTMLElement;
         if (target.tagName === "BUTTON" || target.tagName === "INPUT") {
             event.stopPropagation();
@@ -68,7 +61,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
                     type="text"
                     className="question"
                     placeholder="Type your question"
-                    value={question.question}
+                    value={question.questionText}
                     onChange={handleQuestionChange}
                 />
             </div>
@@ -78,18 +71,16 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
                     addOptionToQuestion={addOptionToQuestion}
                     updateOptionInQuestion={updateOptionInQuestion}
                     removeOptionFromQuestion={removeOptionFromQuestion}
+                    allQuestions={allQuestions}
+                    updateQuestion={updateQuestion}
+                    survey={survey}
                 />
             )}
             {question.type === QuestionType.Text && (
-                <OpenTextEditor
-                    question={question}
-                    updateQuestion={updateQuestion}
-                />
+                <OpenTextEditor question={question} updateQuestion={updateQuestion} />
             )}
             {question.type === QuestionType.OpinionScale && (
-                <OpinionScaleEditor
-                    question={question}
-                />
+                <OpinionScaleEditor question={question} />
             )}
             {question.type === QuestionType.Ranking && (
                 <RankingEditor
@@ -97,6 +88,17 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
                     addOptionToQuestion={addOptionToQuestion}
                     updateOptionInQuestion={updateOptionInQuestion}
                     removeOptionFromQuestion={removeOptionFromQuestion}
+                />
+            )}
+            {question.type === QuestionType.ProgressiveGrid && (
+                <ProgressiveGridEditor
+                    question={question}
+                    updateQuestion={updateQuestion}
+                    addOptionToQuestion={addOptionToQuestion}
+                    removeOptionFromQuestion={removeOptionFromQuestion}
+                    updateOptionInQuestion={updateOptionInQuestion}
+                    allQuestions={allQuestions}
+                    survey={survey}
                 />
             )}
         </div>

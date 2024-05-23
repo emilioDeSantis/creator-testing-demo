@@ -5,12 +5,12 @@ import OpenTextSettings from "./OpenTextSettings";
 import OpinionScaleSettings from "./OpinionScaleSettings";
 import RankingSettings from "./RankingSettings";
 
-
 const questionTypeDisplay = {
-    [QuestionType.MultipleChoice]: 'Multiple Choice',
-    [QuestionType.Text]: 'Open Text Response',
-    [QuestionType.OpinionScale]: 'Opinion Scale',
-    [QuestionType.Ranking]: 'Ranking'
+    [QuestionType.MultipleChoice]: "Multiple Choice",
+    [QuestionType.Text]: "Open Text Response",
+    [QuestionType.OpinionScale]: "Opinion Scale",
+    [QuestionType.Ranking]: "Ranking",
+    [QuestionType.ProgressiveGrid]: "Progressive Grid",
 };
 
 interface QuestionPannelProps {
@@ -21,8 +21,9 @@ interface QuestionPannelProps {
     updateParameterValue: (
         id: string,
         parameter: keyof Parameters,
-        value: number | string
+        value: number | string | boolean
     ) => void;
+    index: number;
 }
 
 const QuestionPannel: React.FC<QuestionPannelProps> = ({
@@ -31,6 +32,7 @@ const QuestionPannel: React.FC<QuestionPannelProps> = ({
     updateQuestionType,
     toggleParameter,
     updateParameterValue,
+    index,
 }) => {
     const focusedQuestion = survey.questions.find(
         (q) => q.id === focusedQuestionId
@@ -65,7 +67,7 @@ const QuestionPannel: React.FC<QuestionPannelProps> = ({
 
     const handleParameterValueChange = (
         parameter: keyof Parameters,
-        value: string | number
+        value: string | number | boolean
     ) => {
         updateParameterValue(focusedQuestion.id, parameter, value);
     };
@@ -81,6 +83,28 @@ const QuestionPannel: React.FC<QuestionPannelProps> = ({
                 padding: "1rem",
             }}
         >
+            <span
+                style={{
+                    fontWeight: 500,
+                    display: "flex",
+                    gap: "1rem",
+                    width: "14rem",
+                    paddingBlock: "0.8rem",
+                    position: "relative",
+                }}
+            >
+                <div>{index + 1 + "."}</div>
+                <div
+                    style={{
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        flexGrow: 1,
+                    }}
+                >
+                    {focusedQuestion.questionText}
+                </div>
+            </span>
             <h3
                 style={{
                     fontSize: "1.2rem",
@@ -139,32 +163,33 @@ const QuestionPannel: React.FC<QuestionPannelProps> = ({
             </h3>
             {focusedQuestion.type === QuestionType.MultipleChoice && (
                 <MultipleChoiceSettings
-                    parameters={focusedQuestion.parameters}
-                    toggleParameter={(parameter) =>
-                        handleToggleParameter(parameter)
-                    }
+                    parameters={focusedQuestion.parameters!}
+                    toggleParameter={handleToggleParameter}
+                />
+            )}
+            {focusedQuestion.type === QuestionType.ProgressiveGrid && (
+                <MultipleChoiceSettings
+                    parameters={focusedQuestion.parameters!}
+                    toggleParameter={handleToggleParameter}
                 />
             )}
             {focusedQuestion.type === QuestionType.Text && (
                 <OpenTextSettings
-                    parameters={focusedQuestion.parameters}
+                    parameters={focusedQuestion.parameters!}
                     toggleParameter={handleToggleParameter}
                     updateParameterValue={handleParameterValueChange}
                 />
             )}
-
             {focusedQuestion.type === QuestionType.OpinionScale && (
                 <OpinionScaleSettings
-                    parameters={focusedQuestion.parameters}
+                    parameters={focusedQuestion.parameters!}
                     updateParameterValue={handleParameterValueChange}
                 />
             )}
             {focusedQuestion.type === QuestionType.Ranking && (
                 <RankingSettings
-                    parameters={focusedQuestion.parameters}
-                    toggleParameter={(parameter) =>
-                        handleToggleParameter(parameter)
-                    }
+                    parameters={focusedQuestion.parameters!}
+                    toggleParameter={handleToggleParameter}
                 />
             )}
         </div>

@@ -54,7 +54,7 @@ const QuestionsListItem: React.FC<QuestionsListItemProps> = ({
                         flexGrow: 1,
                     }}
                 >
-                    {question.question}
+                    {question.questionText}
                 </div>
             </span>
 

@@ -17,19 +17,14 @@ const MultipleChoiceSettings: React.FC<MultipleChoiceSettingsProps> = ({
     };
 
     return (
-        <div className="parameter-container"
-        >
-            {/* <label className="parameter">
-                Multiple Selections
+        <div className="parameter-container">
+            <label className="parameter">
+                Allow Multiple Selections
                 <ToggleSwitch
-                    checked={parameters.multipleSelections}
+                    checked={parameters.multipleSelections || false}
                     onChange={() => handleToggleParameter("multipleSelections")}
                 />
-                
             </label>
-            {parameters.multipleSelections && (
-
-            )} */}
             <label className="parameter">
                 Randomize Options
                 <ToggleSwitch

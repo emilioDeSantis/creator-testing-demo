@@ -8,7 +8,7 @@ export interface Parameters {
     multipleSelections: boolean;
     randomize: boolean;
     otherOption: boolean;
-    mininmumCharacters: boolean;
+    minimumCharacters: boolean;
     maximumCharacters: boolean;
     minimumCharactersValue: number;
     maximumCharactersValue: number;
@@ -22,15 +22,24 @@ export enum QuestionType {
     Text = "text",
     OpinionScale = "opinion scale",
     Ranking = "ranking",
-    // Add more question types here if needed
+    ProgressiveGrid = "progressive grid",
+}
+
+export interface Logic {
+    terminateIfSelectedOptionIds?: string[] ;
+    terminateIfNotSelectedOptionIds?: string[] ;
 }
 
 export interface Question {
     id: string;
-    question: string;
+    questionText: string;
     type: QuestionType;
     options: Option[];
-    parameters: Parameters;
+    parameters?: Parameters;
+    subQuestions?: Question[];
+    dynamicOptionsId?: string;
+    selectedDynamicOptionIds?: string[];
+    logic?: Logic;
 }
 
 export interface Survey {
@@ -38,11 +47,13 @@ export interface Survey {
     questions: Question[];
 }
 
-export interface answer {
+export interface Answer {
     questionId: string;
-    value: string | string[] | number;
+    optionIds: string[];
+    value: string | number;
 }
 
-export interface Results {
-    answers: answer[];
+export interface Result {
+    userId: string;
+    answers: Answer[];
 }

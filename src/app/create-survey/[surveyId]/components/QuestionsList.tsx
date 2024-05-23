@@ -57,7 +57,7 @@ const QuestionsList: React.FC<QuestionsListProps> = ({
                     text="Add question +"
                     onClick={() => {
                         addQuestion({
-                            question: "",
+                            questionText: "",
                         });
                     }}
                 />

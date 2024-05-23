@@ -1,16 +1,16 @@
-// pages/surveys/[surveyId].tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchSurvey, submitResults } from "@/app/firebaseUtils";
-import { Results, Survey } from "@/app/types";
-import Question from "@/app/take-survey/[surveyId]/components/Question";
+import { Result, Survey, Option, Answer, Question } from "@/app/types";
+import QuestionComponent from "@/app/take-survey/[surveyId]/components/Question";
 import Completed from "@/app/take-survey/[surveyId]/components/Completed";
+import { terminate } from "@/app/utils";
 
 const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
     const [survey, setSurvey] = useState<Survey>({ name: "", questions: [] });
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [results, setResults] = useState<Results>({ answers: [] });
+    const [results, setResults] = useState<Result>({ userId: "", answers: [] });
     const [completed, setCompleted] = useState(false);
     const router = useRouter();
 
@@ -24,12 +24,198 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
         loadSurvey();
     }, [params.surveyId]);
 
+    useEffect(() => {
+        console.log("results", results);
+    }, [results]);
+
+
+    const checkTerminationLogic = (question: Question) => {
+        const currentAnswer = results.answers.find(
+            (answer) => answer.questionId === question.id
+        );
+
+        if (question.logic?.terminateIfSelectedOptionIds) {
+            for (const optionId of question.logic.terminateIfSelectedOptionIds) {
+                if (currentAnswer?.optionIds.includes(optionId)) {
+                    return true;
+                }
+            }
+        }
+
+        if (question.logic?.terminateIfNotSelectedOptionIds) {
+            for (const optionId of question.logic.terminateIfNotSelectedOptionIds) {
+                if (!currentAnswer?.optionIds.includes(optionId)) {
+                    return true;
+                }
+            }
+        }
+
+        if (question.subQuestions) {
+            for (const subQuestion of question.subQuestions) {
+                const subAnswer = results.answers.find(
+                    (answer) => answer.questionId === subQuestion.id
+                );
+
+                if (subQuestion.logic?.terminateIfSelectedOptionIds) {
+                    for (const optionId of subQuestion.logic.terminateIfSelectedOptionIds) {
+                        if (subAnswer?.optionIds.includes(optionId)) {
+                            return true;
+                        }
+                    }
+                }
+
+                if (subQuestion.logic?.terminateIfNotSelectedOptionIds) {
+                    for (const optionId of subQuestion.logic.terminateIfNotSelectedOptionIds) {
+                        if (!subAnswer?.optionIds.includes(optionId)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    };
+
     const handleNextQuestion = async () => {
-        if (currentQuestionIndex < survey.questions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        const currentQuestion = survey.questions[currentQuestionIndex];
+        if (checkTerminationLogic(currentQuestion)) {
+            terminate();
         } else {
-            await submitResults(params.surveyId, results);
-            setCompleted(true);
+            if (currentQuestionIndex < survey.questions.length - 1) {
+                setCurrentQuestionIndex(currentQuestionIndex + 1);
+            } else {
+                await submitResults(params.surveyId, results);
+                setCompleted(true);
+            }
+        }
+    };
+
+    const handleOptionChange = (questionId: string, selectedOptionIds: string[]) => {
+        const currentAnswer = results.answers.find(
+            (answer) => answer.questionId === questionId
+        );
+
+        if (currentAnswer) {
+            const updatedAnswer: Answer = {
+                ...currentAnswer,
+                optionIds: selectedOptionIds,
+            };
+
+            setResults({
+                ...results,
+                answers: results.answers.map((answer) =>
+                    answer.questionId === questionId ? updatedAnswer : answer
+                ),
+            });
+        } else {
+            setResults({
+                ...results,
+                answers: [
+                    ...results.answers,
+                    {
+                        questionId: questionId,
+                        optionIds: selectedOptionIds,
+                        value: "",
+                    },
+                ],
+            });
+        }
+    };
+
+    const handleTextChange = (questionId: string, text: string) => {
+        const currentAnswer = results.answers.find(
+            (answer) => answer.questionId === questionId
+        );
+
+        if (currentAnswer) {
+            const updatedAnswer: Answer = {
+                ...currentAnswer,
+                value: text,
+            };
+
+            setResults({
+                ...results,
+                answers: results.answers.map((answer) =>
+                    answer.questionId === questionId ? updatedAnswer : answer
+                ),
+            });
+        } else {
+            setResults({
+                ...results,
+                answers: [
+                    ...results.answers,
+                    {
+                        questionId: questionId,
+                        optionIds: [],
+                        value: text,
+                    },
+                ],
+            });
+        }
+    };
+
+    const handleRankingChange = (questionId: string, rankedOptionIds: string[]) => {
+        const currentAnswer = results.answers.find(
+            (answer) => answer.questionId === questionId
+        );
+
+        if (currentAnswer) {
+            const updatedAnswer: Answer = {
+                ...currentAnswer,
+                optionIds: rankedOptionIds,
+            };
+
+            setResults({
+                ...results,
+                answers: results.answers.map((answer) =>
+                    answer.questionId === questionId ? updatedAnswer : answer
+                ),
+            });
+        } else {
+            setResults({
+                ...results,
+                answers: [
+                    ...results.answers,
+                    {
+                        questionId: questionId,
+                        optionIds: rankedOptionIds,
+                        value: "",
+                    },
+                ],
+            });
+        }
+    };
+
+    const handleOpinionScaleChange = (questionId: string, value: number) => {
+        const currentAnswer = results.answers.find(
+            (answer) => answer.questionId === questionId
+        );
+
+        if (currentAnswer) {
+            const updatedAnswer: Answer = {
+                ...currentAnswer,
+                value: value.toString(),
+            };
+
+            setResults({
+                ...results,
+                answers: results.answers.map((answer) =>
+                    answer.questionId === questionId ? updatedAnswer : answer
+                ),
+            });
+        } else {
+            setResults({
+                ...results,
+                answers: [
+                    ...results.answers,
+                    {
+                        questionId: questionId,
+                        optionIds: [],
+                        value: value.toString(),
+                    },
+                ],
+            });
         }
     };
 
@@ -45,9 +231,7 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                 alignItems: "center",
                 justifyContent: "flex-start",
                 width: "100%",
-                height: "100vh",
                 paddingBottom: "2rem",
-                marginTop: "4rem",
             }}
         >
             <div
@@ -76,12 +260,25 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                 </h1>
             </div>
             {!completed && (
-                <form>
-                    <Question
+                <form 
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    width: "100%",
+                    paddingInline: "1rem",
+                
+                }}>
+                    <QuestionComponent
                         survey={survey}
                         questionIndex={currentQuestionIndex}
                         setResults={setResults}
                         results={results}
+                        handleOptionChange={handleOptionChange}
+                        handleTextChange={handleTextChange}
+                        handleRankingChange={handleRankingChange}
+                        handleOpinionScaleChange={handleOpinionScaleChange}
+                        // dynamicOptions={dynamicOptions}
                     />
                     <button
                         style={{

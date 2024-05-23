@@ -12,9 +12,13 @@ import QuestionPannel from "./components/QuestionPannel";
 import { Option, Parameters, Question, QuestionType, Survey } from "../../types";
 import HeavyHitterButton from "../../components/HeavyHitterButton";
 import { fetchSurvey, updateSurvey } from "@/app/firebaseUtils";
+import { getAllQuestions } from "@/app/utils";
 
 const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
-    const [survey, setSurvey] = useState<Survey>({ name: "Untitled", questions: [] });
+    const [survey, setSurvey] = useState<Survey>({
+        name: "Untitled",
+        questions: [],
+    });
     const [focusedQuestionId, setFocusedQuestionId] = useState<string | null>(null);
     const router = useRouter();
 
@@ -27,25 +31,22 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
         };
         loadSurvey();
     }, [params.surveyId]);
-    
 
     const setSurveyTitle = (title: string) => {
         setSurvey((prevSurvey) => ({ ...prevSurvey, name: title }));
     };
 
-    const addQuestion = (question: Omit<Question, 'id' | 'type' | 'parameters' | 'options'>) => {
-        const newQuestion = { 
-            ...question, 
+    const addQuestion = (question: Omit<Question, "id" | "type" | "parameters" | "options">) => {
+        const newQuestion: Question = {
+            ...question,
             id: uuidv4(),
             type: QuestionType.MultipleChoice,
-            options: [
-                { id: uuidv4(), label: "" },
-            ],
+            options: [{ id: uuidv4(), label: "" }],
             parameters: {
                 multipleSelections: false,
                 randomize: false,
                 otherOption: false,
-                mininmumCharacters: false,
+                minimumCharacters: false,
                 maximumCharacters: false,
                 minimumCharactersValue: 50,
                 maximumCharactersValue: 200,
@@ -54,7 +55,10 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                 maximumRatingValue: "",
             },
         };
-        setSurvey((prevSurvey) => ({ ...prevSurvey, questions: [...prevSurvey.questions, newQuestion] }));
+        setSurvey((prevSurvey) => ({
+            ...prevSurvey,
+            questions: [...prevSurvey.questions, newQuestion],
+        }));
         setFocusedQuestionId(newQuestion.id);
     };
 
@@ -75,8 +79,8 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
         }));
     };
 
-    const addOptionToQuestion = (questionId: string, option: Omit<Option, 'id'>) => {
-        const newOption = { ...option, id: uuidv4() };
+    const addOptionToQuestion = (questionId: string, option: Omit<Option, "id">) => {
+        const newOption: Option = { ...option, id: uuidv4() };
         setSurvey((prevSurvey) => ({
             ...prevSurvey,
             questions: prevSurvey.questions.map((q) =>
@@ -92,9 +96,9 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
             questions: prevSurvey.questions.map((q) =>
                 q.id === questionId
                     ? {
-                        ...q,
-                        options: q.options.map((o) => (o.id === optionId ? { ...o, label } : o)),
-                    }
+                          ...q,
+                          options: q.options.map((o) => (o.id === optionId ? { ...o, label } : o)),
+                      }
                     : q
             ),
         }));
@@ -106,7 +110,10 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
             ...prevSurvey,
             questions: prevSurvey.questions.map((q) =>
                 q.id === questionId
-                    ? { ...q, options: q.options.filter((o) => o.id !== optionId) }
+                    ? {
+                          ...q,
+                          options: q.options.filter((o) => o.id !== optionId),
+                      }
                     : q
             ),
         }));
@@ -116,9 +123,7 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
     const updateQuestionType = (id: string, type: QuestionType) => {
         setSurvey((prevSurvey) => ({
             ...prevSurvey,
-            questions: prevSurvey.questions.map((q) =>
-                q.id === id ? { ...q, type } : q
-            ),
+            questions: prevSurvey.questions.map((q) => (q.id === id ? { ...q, type } : q)),
         }));
     };
 
@@ -126,16 +131,33 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
         setSurvey((prevSurvey) => ({
             ...prevSurvey,
             questions: prevSurvey.questions.map((q) =>
-                q.id === id ? { ...q, parameters: { ...q.parameters, [parameter]: !q.parameters[parameter] } } : q
+                q.id === id && q.parameters
+                    ? {
+                          ...q,
+                          parameters: {
+                              ...q.parameters,
+                              [parameter]: !q.parameters[parameter],
+                          },
+                      }
+                    : q
             ),
         }));
     };
 
-    const updateParameterValue = (id: string, parameter: keyof Parameters, value: number | string) => {
+    const updateParameterValue = (
+        id: string,
+        parameter: keyof Parameters,
+        value: number | string | boolean
+    ) => {
         setSurvey((prevSurvey) => ({
             ...prevSurvey,
             questions: prevSurvey.questions.map((q) =>
-                q.id === id ? { ...q, parameters: { ...q.parameters, [parameter]: value } } : q
+                q.id === id && q.parameters
+                    ? {
+                          ...q,
+                          parameters: { ...q.parameters, [parameter]: value },
+                      }
+                    : q
             ),
         }));
     };
@@ -145,12 +167,10 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
             const formattedSurvey = {
                 ...survey,
                 questions: survey.questions
-                    .filter((question) => question.question !== "")
+                    .filter((question) => question.questionText !== "")
                     .map((question) => ({
                         ...question,
-                        options: question.options.filter(
-                            (option) => option.label !== ""
-                        ),
+                        options: question.options.filter((option) => option.label !== ""),
                     })),
             };
             const success = await updateSurvey(params.surveyId, formattedSurvey);
@@ -161,11 +181,13 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
             }
         } catch (error) {
             console.error("Error updating document:", error);
-            alert(
-                "Error updating document. Check the console for more information."
-            );
+            alert("Error updating document. Check the console for more information.");
         }
-    };return (
+    };
+
+    const allQuestions = getAllQuestions(survey.questions);
+
+    return (
         <main
             style={{
                 display: "flex",
@@ -173,8 +195,8 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                 alignItems: "center",
                 justifyContent: "flex-start",
                 width: "100%",
-                height: "100vh", // Ensure the main container takes the full height
-                overflow: "hidden", // Hide overflow to prevent scrolling on the main container
+                height: "100vh",
+                overflow: "hidden",
                 paddingBottom: "1rem",
                 paddingTop: "4rem",
             }}
@@ -221,7 +243,7 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                     flexGrow: 1,
                     paddingInline: "1.2rem",
                     gap: "1.6rem",
-                    overflow: "hidden", // Prevent overflow on the main flex container
+                    overflow: "hidden",
                 }}
             >
                 <QuestionsList
@@ -242,8 +264,8 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                         border: "1px solid #ddd",
                         paddingTop: "1rem",
                         overflowY: "auto",
-                        paddingBottom: "2rem", // Adjust padding to ensure it's not too large
-                        height: "100%", // Make sure it takes the available height
+                        paddingBottom: "2rem",
+                        height: "100%",
                         paddingInline: "6rem",
                     }}
                 >
@@ -264,7 +286,6 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                                 marginBottom: "1rem",
                                 textAlign: "center",
                                 width: "100%",
-
                             }}
                             type="text"
                             placeholder="Name your survey"
@@ -272,27 +293,44 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                             onChange={(e) => setSurveyTitle(e.target.value)}
                         />
                     </div>
-                    <div style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "1rem",
-                    }}>
-                    {survey.questions.map((question, index) => (
-                        <QuestionEditor
-                            key={index}
-                            index={index}
-                            question={question}
-                            updateQuestion={updateQuestion}
-                            addOptionToQuestion={addOptionToQuestion}
-                            updateOptionInQuestion={updateOptionInQuestion}
-                            removeOptionFromQuestion={removeOptionFromQuestion}
-                            setFocusedQuestionId={setFocusedQuestionId}
-                            focused={focusedQuestionId === question.id}
-                        />
-                    ))}
-
-                    <NewQuestion addQuestion={addQuestion} survey={survey} />
+                    <div
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "1rem",
+                        }}
+                    >
+                        {survey.questions.map((question, index) => (
+                            <QuestionEditor
+                                key={index}
+                                index={index}
+                                question={question}
+                                updateQuestion={updateQuestion}
+                                addOptionToQuestion={addOptionToQuestion}
+                                updateOptionInQuestion={updateOptionInQuestion}
+                                removeOptionFromQuestion={removeOptionFromQuestion}
+                                setFocusedQuestionId={setFocusedQuestionId}
+                                focused={focusedQuestionId === question.id}
+                                allQuestions={allQuestions}
+                                survey={survey}
+                            />
+                        ))}
+                        <button
+                            style={{
+                                padding: "0.8rem 1.6rem",
+                                color: "#7047EB",
+                                border: "1px solid #7047EB",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                background: "transparent",
+                            }}
+                            onClick={() => {
+                                addQuestion({ questionText: "" });
+                            }}
+                        >
+                            Add question +
+                        </button>
                     </div>
                 </div>
                 <QuestionPannel
@@ -301,11 +339,11 @@ const CreateSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) =>
                     updateQuestionType={updateQuestionType}
                     toggleParameter={toggleParameter}
                     updateParameterValue={updateParameterValue}
+                    index={survey.questions.findIndex((question) => question.id === focusedQuestionId)}
                 />
             </div>
         </main>
     );
-
 };
 
 export default CreateSurvey;

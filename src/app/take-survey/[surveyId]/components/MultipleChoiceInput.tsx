@@ -1,38 +1,99 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { Option, Answer, Question } from "@/app/types";
 
-            // <select
-            //     value={focusedQuestion.type}
-            //     onChange={handleQuestionTypeChange}
-            //     style={{
-            //         width: "100%",
-            //         paddingInline: "0.6rem",
-            //         paddingBlock: "0.6rem",
-            //         borderRadius: "6px",
-            //         fontSize: "16px",
-            //         color: "#667085",
-            //         appearance: "none",
-            //         WebkitAppearance: "none",
-            //         MozAppearance: "none",
-            //         position: "relative",
-            //         backgroundImage:
-            //             "url(\"data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23667085' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' class='feather feather-chevron-down' viewBox='0 0 24 24'><path d='M6 9l6 6 6-6'/></svg>\")",
-            //         backgroundRepeat: "no-repeat",
-            //         backgroundPosition: "right 10px center",
-            //         backgroundSize: "16px 16px",
-            //         marginTop: "0.6rem",
-            //         cursor: "pointer",
-            //     }}
-            // >
-            //     {Object.values(QuestionType).map((type) => (
-            //         <option
-            //             key={type}
-            //             value={type}
-            //             style={{
-            //                 backgroundColor: "#fff",
-            //                 color: "#333",
-            //                 fontSize: "0.9rem",
-            //                 fontWeight: 400,
-            //             }}
-            //         >
-            //             {questionTypeDisplay[type]}
-            //         </option>
-            //     ))}
+interface MultipleChoiceInputProps {
+    question: Question;
+    answer: Answer;
+    questionIndex: number;
+    handleOptionChange: (
+        questionId: string,
+        selectedOptionIds: string[],
+    ) => void;
+    options: Option[];
+}
+
+export const shuffleArray = (array: Option[]): Option[] => {
+    return array
+        .map((value) => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+};
+
+const MultipleChoiceInput: React.FC<MultipleChoiceInputProps> = ({
+    question,
+    answer,
+    questionIndex,
+    handleOptionChange,
+    options,
+}) => {
+    const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
+
+    useEffect(() => {
+        let filteredOptions = options;
+        if (question.dynamicOptionsId) {
+            filteredOptions = options.filter((option) =>
+                question.selectedDynamicOptionIds?.includes(option.id)
+            );
+        }
+        if (question.parameters?.randomize) {
+            setShuffledOptions(shuffleArray(filteredOptions));
+        } else {
+            setShuffledOptions(filteredOptions);
+        }
+    }, [question, options]);
+
+    const handleCheckboxChange = (optionId: string) => {
+        let updatedOptionIds: string[];
+
+        if (question.parameters?.multipleSelections) {
+            if (answer.optionIds.includes(optionId)) {
+                updatedOptionIds = answer.optionIds.filter(
+                    (id) => id !== optionId
+                );
+            } else {
+                updatedOptionIds = [...answer.optionIds, optionId];
+            }
+        } else {
+            updatedOptionIds = [optionId];
+        }
+
+        handleOptionChange(question.id, updatedOptionIds,);
+    };
+
+    return (
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+                marginTop: "1rem",
+                gap: "0.5rem",
+                paddingInline: "2rem",
+            }}
+        >
+            {shuffledOptions.map((option) => (
+                <div
+                    key={option.id}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                    }}
+                >
+                    <input
+                        type="checkbox"
+                        name={`question-${questionIndex}`}
+                        value={option.label}
+                        checked={answer?.optionIds.includes(option.id) || false}
+                        onChange={() => handleCheckboxChange(option.id)}
+                    />
+                    <label>{option.label}</label>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default MultipleChoiceInput;
