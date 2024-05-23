@@ -64,7 +64,7 @@ const OpinionScaleEditor: React.FC<OpinionScaleEditorProps> = ({
                         alignItems: "center",
                     }}
                 >
-                    {question.parameters.minimumRatingValue}
+                    {question.parameters?.minimumRatingValue}
                 </label>
                 <label
                     style={{
@@ -73,7 +73,7 @@ const OpinionScaleEditor: React.FC<OpinionScaleEditorProps> = ({
                         alignItems: "center",
                     }}
                 >
-                    {question.parameters.middleRatingValue}
+                    {question.parameters?.middleRatingValue}
                 </label>
                 <label
                     style={{
@@ -82,7 +82,7 @@ const OpinionScaleEditor: React.FC<OpinionScaleEditorProps> = ({
                         alignItems: "center",
                     }}
                 >
-                    {question.parameters.maximumRatingValue}
+                    {question.parameters?.maximumRatingValue}
                 </label>
             </div>
         </div>

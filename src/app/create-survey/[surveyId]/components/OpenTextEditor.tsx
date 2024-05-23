@@ -14,7 +14,7 @@ const OpenTextEditor: React.FC<OpenTextEditorProps> = ({
     const handleTextChange = (
         event: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
-        updateQuestion(question.id, { question: event.target.value });
+        updateQuestion(question.id, { questionText: event.target.value });
     };
 
     return (

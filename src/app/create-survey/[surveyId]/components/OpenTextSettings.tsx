@@ -32,11 +32,11 @@ const OpenTextSettings: React.FC<OpenTextSettingsProps> = ({
             <label className="parameter">
                 Minimum Characters
                 <ToggleSwitch
-                    checked={parameters.mininmumCharacters}
-                    onChange={() => handleToggleParameter("mininmumCharacters")}
+                    checked={parameters.minimumCharacters}
+                    onChange={() => handleToggleParameter("minimumCharacters")}
                 />
             </label>
-            {parameters.mininmumCharacters && (
+            {parameters.minimumCharacters && (
                 <input
                     type="number"
                     value={parameters.minimumCharactersValue}
