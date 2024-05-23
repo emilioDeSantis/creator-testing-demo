@@ -11,7 +11,7 @@ const NewQuestion: React.FC<NewQuestionProps> = ({ addQuestion, survey }) => {
 
     const onTextChange = (text: string) => {
         addQuestion({
-            question: text,
+            questionText: text,
         });
         setInputText("");
     };
