@@ -12,6 +12,8 @@ interface ProgressiveGridInputProps {
         selectedOptionIds: string[]
     ) => void;
     options: Option[];
+    // onProgressiveIndexChange: (index: number) => void;
+    setAllPagesVisited: (value: boolean) => void;
 }
 
 const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
@@ -19,6 +21,8 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
     answers,
     handleOptionChange,
     options,
+    // onProgressiveIndexChange,
+    setAllPagesVisited,
 }) => {
     const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
     const deviceType = useDeviceType();
@@ -37,6 +41,7 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
             setShuffledOptions(filteredOptions);
         }
         setCurrentIndex(0); // Reset the current index when question or options change
+        onProgressiveIndexChange(0); // Inform parent component of the reset
     }, [question, options]);
 
     const subQuestions = question.subQuestions || [];
@@ -72,14 +77,31 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
             (moreItemsOnXAxis ? subQuestions.length : shuffledOptions.length) -
                 1
         ) {
-            setCurrentIndex(currentIndex + 1);
+            const newIndex = currentIndex + 1;
+            setCurrentIndex(newIndex);
+            onProgressiveIndexChange(newIndex);
         }
     };
 
     const handlePrevious = () => {
         if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
+            const newIndex = currentIndex - 1;
+            setCurrentIndex(newIndex);
+            onProgressiveIndexChange(newIndex);
         }
+    };
+
+    const onProgressiveIndexChange = (index: number) => {
+        if (moreItemsOnXAxis ){
+            if (subQuestions && subQuestions.length - 1 ===index ) {
+                setAllPagesVisited(true);
+            }
+        } else {
+            if (shuffledOptions && shuffledOptions.length - 1 ===index ) {
+                setAllPagesVisited(true);
+            }
+        }
+
     };
 
     if (deviceType === "mobile") {
@@ -89,22 +111,34 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                     <div
                         style={{
                             display: "grid",
-                            gridTemplateColumns: "1fr auto",
+                            gridTemplateColumns: "1fr 1fr",
                             gap: "1rem",
                             maxWidth: "400px",
                             margin: "0 auto",
                         }}
                     >
                         <div></div>
-                        <div style={{ fontWeight: 400 }}>
+                        <div
+                            style={{
+                                fontWeight: 400,
+                                opacity: 0.6,
+                                textAlign: "center",
+                            }}
+                        >
                             {subQuestions[currentIndex]?.questionText}
                         </div>
-                        {shuffledOptions.map((option) => (
+                        {shuffledOptions.map((option, index) => (
                             <React.Fragment key={option.id}>
-                                <div style={{ fontWeight: 400 }}>
-                                    {option.label}
+                                <div
+                                    style={{
+                                        fontWeight: 400,
+                                        opacity: 0.6,
+                                        textAlign: "center",
+                                    }}
+                                >
+                            {option.label}
                                 </div>
-                                <div>
+                                <div style={{ textAlign: "center" }}>
                                     <input
                                         type="checkbox"
                                         checked={
@@ -126,6 +160,11 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                                                 option.id
                                             )
                                         }
+                                        style={{
+                                            borderRadius: "50%",
+                                            width: "1.2rem",
+                                            height: "1.2rem",
+                                        }}
                                     />
                                 </div>
                             </React.Fragment>
@@ -155,6 +194,17 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                             >
                                 Previous
                             </button>
+
+                            <div
+                                style={{
+                                    textAlign: "center",
+                                    marginBottom: "1rem",
+                                }}
+                            >
+                                {`${currentIndex + 1} of ${
+                                    subQuestions.length
+                                }`}
+                            </div>
                             <button
                                 type="button"
                                 onClick={handleNext}
@@ -181,22 +231,34 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                     <div
                         style={{
                             display: "grid",
-                            gridTemplateColumns: "auto 1fr",
+                            gridTemplateColumns: "1fr 1fr",
                             gap: "1rem",
                             maxWidth: "400px",
                             margin: "0 auto",
                         }}
                     >
                         <div />
-                        <div style={{ fontWeight: 400 }}>
+                        <div
+                            style={{
+                                fontWeight: 400,
+                                opacity: 0.6,
+                                textAlign: "center",
+                            }}
+                        >
                             {shuffledOptions[currentIndex]?.label}
                         </div>
                         {subQuestions.map((subQuestion) => (
                             <React.Fragment key={subQuestion.id}>
-                                <div style={{ fontWeight: 400 }}>
+                                <div
+                                    style={{
+                                        fontWeight: 400,
+                                        opacity: 0.6,
+                                        textAlign: "center",
+                                    }}
+                                >
                                     {subQuestion.questionText}
                                 </div>
-                                <div>
+                                <div style={{ textAlign: "center" }}>
                                     <input
                                         type="checkbox"
                                         checked={
@@ -218,6 +280,11 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                                                 shuffledOptions[currentIndex].id
                                             )
                                         }
+                                        style={{
+                                            borderRadius: "50%",
+                                            width: "1.2rem",
+                                            height: "1.2rem",
+                                        }}
                                     />
                                 </div>
                             </React.Fragment>
@@ -247,6 +314,7 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                             >
                                 Previous
                             </button>
+                            {`${currentIndex + 1} of ${shuffledOptions.length}`}
                             <button
                                 type="button"
                                 onClick={handleNext}
@@ -291,14 +359,27 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
             <div></div>
             {moreItemsOnXAxis ? (
                 <>
-                    {subQuestions.map((subQuestion) => (
-                        <div key={subQuestion.id} style={{ fontWeight: 400 }}>
-                            {subQuestion.questionText}
+                    {subQuestions.map((subQuestion, index) => (
+                        <div
+                            key={subQuestion.id}
+                            style={{
+                                fontWeight: 400,
+                                opacity: 0.6,
+                                textAlign: "center",
+                            }}
+                        >
+                            {`${subQuestion.questionText}`}
                         </div>
                     ))}
                     {shuffledOptions.map((option) => (
                         <React.Fragment key={option.id}>
-                            <div style={{ fontWeight: 400 }}>
+                            <div
+                                style={{
+                                    fontWeight: 400,
+                                    opacity: 0.6,
+                                    textAlign: "center",
+                                }}
+                            >
                                 {option.label}
                             </div>
                             {subQuestions.map((subQuestion) => {
@@ -311,12 +392,20 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                                 };
 
                                 return (
-                                    <div key={subQuestion.id}>
+                                    <div
+                                        key={subQuestion.id}
+                                        style={{ textAlign: "center" }}
+                                    >
                                         <input
                                             type="checkbox"
                                             checked={subAnswer.optionIds.includes(
                                                 option.id
                                             )}
+                                            style={{
+                                                borderRadius: "50%",
+                                                width: "1.2rem",
+                                                height: "1.2rem",
+                                            }}
                                             onChange={() =>
                                                 handleCheckboxChange(
                                                     subQuestion.id,
@@ -332,14 +421,19 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                 </>
             ) : (
                 <>
-                    {shuffledOptions.map((option) => (
-                        <div key={option.id} style={{ fontWeight: 400 }}>
-                            {option.label}
+                    {shuffledOptions.map((option, index) => (
+                        <div
+                            key={option.id}
+                            style={{ fontWeight: 400, textAlign: "center" }}
+                        >
+                            {`${option.label}`}
                         </div>
                     ))}
                     {subQuestions.map((subQuestion) => (
                         <React.Fragment key={subQuestion.id}>
-                            <div style={{ fontWeight: 400 }}>
+                            <div
+                                style={{ fontWeight: 400, textAlign: "center" }}
+                            >
                                 {subQuestion.questionText}
                             </div>
                             {shuffledOptions.map((option) => {
@@ -352,12 +446,20 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                                 };
 
                                 return (
-                                    <div key={option.id}>
+                                    <div
+                                        key={option.id}
+                                        style={{ textAlign: "center" }}
+                                    >
                                         <input
                                             type="checkbox"
                                             checked={subAnswer.optionIds.includes(
                                                 option.id
                                             )}
+                                            style={{
+                                                borderRadius: "50%",
+                                                width: "1.2rem",
+                                                height: "1.2rem",
+                                            }}
                                             onChange={() =>
                                                 handleCheckboxChange(
                                                     subQuestion.id,

@@ -28,14 +28,14 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
         console.log("results", results);
     }, [results]);
 
-
     const checkTerminationLogic = (question: Question) => {
         const currentAnswer = results.answers.find(
             (answer) => answer.questionId === question.id
         );
 
         if (question.logic?.terminateIfSelectedOptionIds) {
-            for (const optionId of question.logic.terminateIfSelectedOptionIds) {
+            for (const optionId of question.logic
+                .terminateIfSelectedOptionIds) {
                 if (currentAnswer?.optionIds.includes(optionId)) {
                     return true;
                 }
@@ -43,7 +43,8 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
         }
 
         if (question.logic?.terminateIfNotSelectedOptionIds) {
-            for (const optionId of question.logic.terminateIfNotSelectedOptionIds) {
+            for (const optionId of question.logic
+                .terminateIfNotSelectedOptionIds) {
                 if (!currentAnswer?.optionIds.includes(optionId)) {
                     return true;
                 }
@@ -57,7 +58,8 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                 );
 
                 if (subQuestion.logic?.terminateIfSelectedOptionIds) {
-                    for (const optionId of subQuestion.logic.terminateIfSelectedOptionIds) {
+                    for (const optionId of subQuestion.logic
+                        .terminateIfSelectedOptionIds) {
                         if (subAnswer?.optionIds.includes(optionId)) {
                             return true;
                         }
@@ -65,7 +67,8 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                 }
 
                 if (subQuestion.logic?.terminateIfNotSelectedOptionIds) {
-                    for (const optionId of subQuestion.logic.terminateIfNotSelectedOptionIds) {
+                    for (const optionId of subQuestion.logic
+                        .terminateIfNotSelectedOptionIds) {
                         if (!subAnswer?.optionIds.includes(optionId)) {
                             return true;
                         }
@@ -91,7 +94,10 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
         }
     };
 
-    const handleOptionChange = (questionId: string, selectedOptionIds: string[]) => {
+    const handleOptionChange = (
+        questionId: string,
+        selectedOptionIds: string[]
+    ) => {
         const currentAnswer = results.answers.find(
             (answer) => answer.questionId === questionId
         );
@@ -155,7 +161,10 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
         }
     };
 
-    const handleRankingChange = (questionId: string, rankedOptionIds: string[]) => {
+    const handleRankingChange = (
+        questionId: string,
+        rankedOptionIds: string[]
+    ) => {
         const currentAnswer = results.answers.find(
             (answer) => answer.questionId === questionId
         );
@@ -254,21 +263,22 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                         alignItems: "center",
                         paddingBlock: "1.2rem",
                         borderBottom: "1px solid #eee",
+                        paddingInline: "1rem",
                     }}
                 >
                     {survey.name}
                 </h1>
             </div>
             {!completed && (
-                <form 
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    width: "100%",
-                    paddingInline: "1rem",
-                
-                }}>
+                <form
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        width: "100%",
+                        paddingInline: "1rem",
+                    }}
+                >
                     <QuestionComponent
                         survey={survey}
                         questionIndex={currentQuestionIndex}
@@ -278,24 +288,9 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                         handleTextChange={handleTextChange}
                         handleRankingChange={handleRankingChange}
                         handleOpinionScaleChange={handleOpinionScaleChange}
+                        handleNextQuestion={handleNextQuestion}
                         // dynamicOptions={dynamicOptions}
                     />
-                    <button
-                        style={{
-                            padding: "1rem 1.6rem",
-                            color: "#7047EB",
-                            border: "1px solid #7047EB",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            background: "transparent",
-                            fontSize: "1.2rem",
-                            marginTop: "3rem",
-                        }}
-                        type="button"
-                        onClick={handleNextQuestion}
-                    >
-                        Continue
-                    </button>
                 </form>
             )}
             {completed && <Completed />}
