@@ -36,6 +36,10 @@ const HomePage: React.FC = () => {
         fetchData();
     }, []);
 
+
+    return (
+        null
+    )
     return (
         <main
             style={{
