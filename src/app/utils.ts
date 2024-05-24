@@ -21,10 +21,6 @@ export const getAllQuestions = (questions: Question[]): Question[] => {
     return allQuestions;
 };
 
-// globalFunctions.ts
-export const terminate = () => {
-    alert("TERMINATED!!!");
-};
 
 
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Option, QuestionType, Result, Survey, Answer } from "@/app/types";
 import MultipleChoiceInput from "./MultipleChoiceInput";
 import OpenTextInput from "./OpenTextInput";
@@ -37,20 +37,26 @@ const Question: React.FC<QuestionProps> = ({
     handleRankingChange,
     handleNextQuestion,
 }) => {
-    const [allPagesVisited, setAllPagesVisited] = useState(true);
+    const [allPagesVisited, setAllPagesVisited] = useState(false);
+    const [canProceed, setCanProceed] = useState(false);
     const deviceType = useDeviceType();
     const question = survey.questions[questionIndex];
     const answer: Answer = results.answers.find(
         (ans) => ans.questionId === question.id
     ) || { questionId: question.id, optionIds: [], value: "" };
 
-    useEffect(() => {
-        if (question.type === QuestionType.ProgressiveGrid && deviceType === "mobile") {
-            setAllPagesVisited(false);
-        } else {
-            setAllPagesVisited(true);
-        }
-    }, [question.type, deviceType, questionIndex]);
+    // useEffect(() => {
+    //     if (
+    //         question.type === QuestionType.ProgressiveGrid &&
+    //         deviceType === "mobile"
+    //     ) {
+    //         console.log("ProgressiveGrid on mobile", );
+    //         setAllPagesVisited(false);
+    //     } else {
+    //         setAllPagesVisited(true);
+    //     }
+    //     checkIfCanProceed();
+    // }, [question.type, deviceType, questionIndex, results.answers]);
 
     const findDynamicOptions = (dynamicOptionsId: string): Option[] => {
         for (const q of survey.questions) {
@@ -89,15 +95,57 @@ const Question: React.FC<QuestionProps> = ({
         : question.options;
 
     const handleProgressiveIndexChange = (index: number) => {
-        if (question.subQuestions && question.subQuestions.length - 1 ===index ) {
+        if (
+            question.subQuestions &&
+            question.subQuestions.length - 1 === index
+        ) {
             setAllPagesVisited(true);
         }
     };
 
     const handleNextQuestionClick = () => {
         handleNextQuestion();
-        setAllPagesVisited(true);
+        setAllPagesVisited(false);
+        setCanProceed(false); // Reset canProceed state for the next question
     };
+
+    const handleOptionChangeWithValidation = (
+        questionId: string,
+        selectedOptionIds: string[]
+    ) => {
+        handleOptionChange(questionId, selectedOptionIds);
+    };
+
+    useEffect(() => {
+        checkIfCanProceed();
+    }, [answer]);
+
+    const checkIfCanProceed = () => {
+        let canProceed = false;
+
+        const checkAnswer = (answer: Answer) => {
+            if (answer.optionIds.length > 0) {
+                canProceed = true;
+            }
+        };
+
+        checkAnswer(answer);
+
+        if (question.subQuestions) {
+            for (const subQuestion of question.subQuestions) {
+                const subAnswer: Answer = results.answers.find(
+                    (ans) => ans.questionId === subQuestion.id
+                ) || { questionId: subQuestion.id, optionIds: [], value: "" };
+                checkAnswer(subAnswer);
+            }
+        }
+
+        setCanProceed(canProceed);
+    };
+
+    useEffect(() => {
+        console.log("allPagesVisited, canProceed", allPagesVisited, canProceed);
+    }, [allPagesVisited, canProceed]);
 
     return (
         <div
@@ -120,7 +168,7 @@ const Question: React.FC<QuestionProps> = ({
                     question={question}
                     answer={answer}
                     questionIndex={questionIndex}
-                    handleOptionChange={handleOptionChange}
+                    handleOptionChange={handleOptionChangeWithValidation}
                     options={options}
                 />
             )}
@@ -150,38 +198,36 @@ const Question: React.FC<QuestionProps> = ({
                 <ProgressiveGridInput
                     question={question}
                     answers={results.answers}
-                    handleOptionChange={handleOptionChange}
+                    handleOptionChange={handleOptionChangeWithValidation}
                     options={options}
                     setAllPagesVisited={setAllPagesVisited}
+                    questionIndex={questionIndex}
                 />
             )}
 
-            {allPagesVisited && (
-                <div
-                    style={{
-                        display: "flex",
-                        width: "100%",
-                        marginTop: "3rem",
-                    }}
-                >
+            {(question.type !== QuestionType.ProgressiveGrid ||
+                deviceType !== "mobile" ||
+                allPagesVisited) &&
+                canProceed && (
                     <button
                         style={{
+                            position: "fixed",
+                            bottom: "2rem",
+                            right: "2rem",
                             padding: "1rem 1.6rem",
                             color: "#7047EB",
                             border: "1px solid #7047EB",
                             borderRadius: "4px",
                             cursor: "pointer",
-                            background: "transparent",
+                            background: "#E4E1FF",
                             fontSize: "1.2rem",
-                            marginTop: "3rem",
                         }}
                         type="button"
                         onClick={handleNextQuestionClick}
                     >
                         Continue
                     </button>
-                </div>
-            )}
+                )}
         </div>
     );
 };

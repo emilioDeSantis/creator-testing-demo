@@ -69,7 +69,7 @@ const MultipleChoiceInput: React.FC<MultipleChoiceInputProps> = ({
                 alignItems: "flex-start",
                 justifyContent: "flex-start",
                 marginTop: "1rem",
-                gap: "0.5rem",
+                gap: "1.6rem",
                 paddingInline: "2rem",
             }}
         >
@@ -79,7 +79,7 @@ const MultipleChoiceInput: React.FC<MultipleChoiceInputProps> = ({
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "0.5rem",
+                        gap: "1rem",
                     }}
                 >
                     <input
@@ -88,8 +88,16 @@ const MultipleChoiceInput: React.FC<MultipleChoiceInputProps> = ({
                         value={option.label}
                         checked={answer?.optionIds.includes(option.id) || false}
                         onChange={() => handleCheckboxChange(option.id)}
+                        style={{ 
+                            cursor: "pointer",
+                            minHeight: "1.2rem",
+                            minWidth: "1.2rem",
+
+                         }}
                     />
-                    <label>{option.label}</label>
+                    <label style={{
+                        opacity:0.6,
+                    }}>{option.label}</label>
                 </div>
             ))}
         </div>

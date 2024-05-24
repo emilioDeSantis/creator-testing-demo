@@ -5,7 +5,8 @@ import { fetchSurvey, submitResults } from "@/app/firebaseUtils";
 import { Result, Survey, Option, Answer, Question } from "@/app/types";
 import QuestionComponent from "@/app/take-survey/[surveyId]/components/Question";
 import Completed from "@/app/take-survey/[surveyId]/components/Completed";
-import { terminate } from "@/app/utils";
+import Terminated from "./components/Terminated";
+import Image from "next/image";
 
 const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
     const [survey, setSurvey] = useState<Survey>({ name: "", questions: [] });
@@ -13,6 +14,11 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
     const [results, setResults] = useState<Result>({ userId: "", answers: [] });
     const [completed, setCompleted] = useState(false);
     const router = useRouter();
+    const [terminated, setTerminated] = useState(false);
+
+    const terminate = () => {
+        setTerminated(true);
+    };
 
     useEffect(() => {
         const loadSurvey = async () => {
@@ -232,6 +238,10 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
         return <div>Loading...</div>;
     }
 
+    if (terminated) {
+        return <Terminated />;
+    }
+
     return (
         <main
             style={{
@@ -243,7 +253,45 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                 paddingBottom: "2rem",
             }}
         >
+            <div style={{
+                height: "5rem",
+            }}/>
             <div
+                style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    width: "100%",
+                    borderBottom: "1px solid #eee",
+                    paddingInline: "1rem",
+                    paddingBlock: "0.6rem",
+                    fontSize: "0.9rem",
+                    position: "fixed",
+                    background: "#fff",
+                    zIndex: 1000,
+                }}
+            >
+                <div
+                    style={{
+                        width: "12rem",
+                        height: "3rem",
+                        position: "relative",
+                    }}
+                >
+                    <Image
+                        fill
+                        src={`/creator-testing-logo.png`}
+                        alt={"image"}
+                        sizes="100vw"
+                        priority
+                        style={{
+                            objectFit: "cover",
+                        }}
+                    />
+                </div>
+            </div>
+
+            {/* <div
                 style={{
                     width: "100%",
                     marginBlock: "1.2rem",
@@ -268,7 +316,7 @@ const TakeSurvey: React.FC<{ params: { surveyId: string } }> = ({ params }) => {
                 >
                     {survey.name}
                 </h1>
-            </div>
+            </div> */}
             {!completed && (
                 <form
                     style={{

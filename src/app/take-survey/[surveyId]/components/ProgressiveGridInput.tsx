@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Option, Question, Answer } from "@/app/types";
 import useDeviceType from "@/app/hooks/useDeviceType";
 import { shuffleArray } from "./MultipleChoiceInput";
@@ -14,6 +14,7 @@ interface ProgressiveGridInputProps {
     options: Option[];
     // onProgressiveIndexChange: (index: number) => void;
     setAllPagesVisited: (value: boolean) => void;
+    questionIndex: number;
 }
 
 const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
@@ -23,10 +24,15 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
     options,
     // onProgressiveIndexChange,
     setAllPagesVisited,
+    questionIndex,
 }) => {
     const [shuffledOptions, setShuffledOptions] = useState<Option[]>([]);
     const deviceType = useDeviceType();
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        console.log("currentIndex", currentIndex);
+    }   , [currentIndex]);
 
     useEffect(() => {
         let filteredOptions = options;
@@ -40,9 +46,14 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
         } else {
             setShuffledOptions(filteredOptions);
         }
-        setCurrentIndex(0); // Reset the current index when question or options change
-        onProgressiveIndexChange(0); // Inform parent component of the reset
+        console.log("set to 0");
+        console.log("question", question);// Inform parent component of the reset
     }, [question, options]);
+
+    useEffect(() => {
+        setCurrentIndex(0); // Reset the current index when question or options change
+        onProgressiveIndexChange(0); 
+    },[questionIndex]);
 
     const subQuestions = question.subQuestions || [];
     const moreItemsOnXAxis = shuffledOptions.length > subQuestions.length;
@@ -92,21 +103,137 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
     };
 
     const onProgressiveIndexChange = (index: number) => {
-        if (moreItemsOnXAxis ){
-            if (subQuestions && subQuestions.length - 1 ===index ) {
+        if (moreItemsOnXAxis) {
+            if (subQuestions && subQuestions.length - 1 === index) {
                 setAllPagesVisited(true);
             }
         } else {
-            if (shuffledOptions && shuffledOptions.length - 1 ===index ) {
+            if (shuffledOptions && shuffledOptions.length - 1 === index) {
                 setAllPagesVisited(true);
             }
         }
-
     };
 
     if (deviceType === "mobile") {
         return (
             <div style={{ marginTop: "2rem", padding: "0 1rem" }}>
+                {moreItemsOnXAxis ? (
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: "-2rem",
+                            marginBottom: "2rem",
+                        }}
+                    >
+                        <button
+                            type="button"
+                            onClick={handlePrevious}
+                            style={{
+                                visibility:
+                                    currentIndex > 0 ? "visible" : "hidden",
+                                padding: "0.5rem",
+                                backgroundColor: "#7047EB",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "1rem",
+                                width: "6rem",
+                            }}
+                        >
+                            Previous
+                        </button>
+
+                        <div
+                            style={{
+                                textAlign: "center",
+                            }}
+                        >
+                            {`${currentIndex + 1} of ${subQuestions.length}`}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleNext}
+                            style={{
+                                visibility:
+                                    subQuestions &&
+                                    currentIndex < subQuestions.length - 1
+                                        ? "visible"
+                                        : "hidden",
+                                padding: "0.5rem",
+                                backgroundColor: "#7047EB",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "1rem",
+                                width: "6rem",
+                            }}
+                        >
+                            Next
+                        </button>
+                    </div>
+                ) : (
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: "-2rem",
+                            marginBottom: "2rem",
+                        }}
+                    >
+                        <button
+                            type="button"
+                            onClick={handlePrevious}
+                            style={{
+                                visibility:
+                                    currentIndex > 0 ? "visible" : "hidden",
+                                padding: "0.5rem",
+                                backgroundColor: "#7047EB",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "1rem",
+                                width: "6rem",
+                            }}
+                        >
+                            Previous
+                        </button>
+
+                        <div
+                            style={{
+                                textAlign: "center",
+                            }}
+                        >
+                            {`${currentIndex + 1} of ${shuffledOptions.length}`}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleNext}
+                            style={{
+                                visibility:
+                                    subQuestions &&
+                                    currentIndex < shuffledOptions.length - 1
+                                        ? "visible"
+                                        : "hidden",
+                                padding: "0.5rem",
+                                backgroundColor: "#7047EB",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                fontSize: "1rem",
+                                width: "6rem",
+                            }}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
                 {moreItemsOnXAxis ? (
                     <div
                         style={{
@@ -131,12 +258,20 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                             <React.Fragment key={option.id}>
                                 <div
                                     style={{
-                                        fontWeight: 400,
-                                        opacity: 0.6,
-                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "flex-start",
+                                        alignItems: "center",
                                     }}
                                 >
-                            {option.label}
+                                    <div
+                                        style={{
+                                            fontWeight: 400,
+                                            opacity: 0.6,
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        {option.label}
+                                    </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
                                     <input
@@ -169,63 +304,6 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                                 </div>
                             </React.Fragment>
                         ))}
-                        <div
-                            style={{
-                                gridColumn: "span 2",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginTop: "1rem",
-                            }}
-                        >
-                            <button
-                                type="button"
-                                onClick={handlePrevious}
-                                style={{
-                                    visibility:
-                                        currentIndex > 0 ? "visible" : "hidden",
-                                    padding: "0.5rem 1rem",
-                                    backgroundColor: "#7047EB",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    fontSize: "1rem",
-                                }}
-                            >
-                                Previous
-                            </button>
-
-                            <div
-                                style={{
-                                    textAlign: "center",
-                                    marginBottom: "1rem",
-                                }}
-                            >
-                                {`${currentIndex + 1} of ${
-                                    subQuestions.length
-                                }`}
-                            </div>
-                            <button
-                                type="button"
-                                onClick={handleNext}
-                                style={{
-                                    visibility:
-                                        subQuestions &&
-                                        currentIndex < subQuestions.length - 1
-                                            ? "visible"
-                                            : "hidden",
-                                    padding: "0.5rem 1rem",
-                                    backgroundColor: "#7047EB",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    fontSize: "1rem",
-                                }}
-                            >
-                                Next
-                            </button>
-                        </div>
                     </div>
                 ) : (
                     <div
@@ -251,12 +329,19 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                             <React.Fragment key={subQuestion.id}>
                                 <div
                                     style={{
-                                        fontWeight: 400,
-                                        opacity: 0.6,
-                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "flex-start",
+                                        alignItems: "center",
                                     }}
                                 >
-                                    {subQuestion.questionText}
+                                    <div
+                                        style={{
+                                            fontWeight: 400,
+                                            opacity: 0.6,
+                                        }}
+                                    >
+                                        {subQuestion.questionText}
+                                    </div>
                                 </div>
                                 <div style={{ textAlign: "center" }}>
                                     <input
@@ -289,53 +374,6 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                                 </div>
                             </React.Fragment>
                         ))}
-                        <div
-                            style={{
-                                gridColumn: "span 2",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginTop: "1rem",
-                            }}
-                        >
-                            <button
-                                type="button"
-                                onClick={handlePrevious}
-                                style={{
-                                    visibility:
-                                        currentIndex > 0 ? "visible" : "hidden",
-                                    padding: "0.5rem 1rem",
-                                    backgroundColor: "#7047EB",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    fontSize: "1rem",
-                                }}
-                            >
-                                Previous
-                            </button>
-                            {`${currentIndex + 1} of ${shuffledOptions.length}`}
-                            <button
-                                type="button"
-                                onClick={handleNext}
-                                style={{
-                                    visibility:
-                                        currentIndex <
-                                        shuffledOptions.length - 1
-                                            ? "visible"
-                                            : "hidden",
-                                    padding: "0.5rem 1rem",
-                                    backgroundColor: "#7047EB",
-                                    color: "#fff",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    fontSize: "1rem",
-                                }}
-                            >
-                                Next
-                            </button>
-                        </div>
                     </div>
                 )}
             </div>
@@ -375,12 +413,20 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                         <React.Fragment key={option.id}>
                             <div
                                 style={{
-                                    fontWeight: 400,
-                                    opacity: 0.6,
-                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "flex-start",
+                                    alignItems: "center",
                                 }}
                             >
-                                {option.label}
+                                <div
+                                    style={{
+                                        fontWeight: 400,
+                                        opacity: 0.6,
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    {option.label}
+                                </div>
                             </div>
                             {subQuestions.map((subQuestion) => {
                                 const subAnswer = answers.find(
@@ -431,11 +477,21 @@ const ProgressiveGridInput: React.FC<ProgressiveGridInputProps> = ({
                     ))}
                     {subQuestions.map((subQuestion) => (
                         <React.Fragment key={subQuestion.id}>
-                            <div
-                                style={{ fontWeight: 400, textAlign: "center" }}
-                            >
-                                {subQuestion.questionText}
-                            </div>
+                            <div style={{
+                                    display: "flex",
+                                    justifyContent: "flex-start",
+                                    alignItems: "center",
+                                }}>
+                                    <div
+                                        style={{
+                                            fontWeight: 400,
+                                            opacity: 0.6,
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        {subQuestion.questionText}
+                                    </div>
+                                </div>
                             {shuffledOptions.map((option) => {
                                 const subAnswer = answers.find(
                                     (ans) => ans.questionId === subQuestion.id
